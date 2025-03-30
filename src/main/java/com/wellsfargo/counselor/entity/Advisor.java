@@ -1,10 +1,12 @@
 package com.wellsfargo.counselor.entity;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+import java.util.*;
 
 @Entity
 public class Advisor {
@@ -14,13 +16,7 @@ public class Advisor {
     private long advisorId;
 
     @Column(nullable = false)
-    private String firstName;
-
-    @Column(nullable = false)
-    private String lastName;
-
-    @Column(nullable = false)
-    private String address;
+    private String name;
 
     @Column(nullable = false)
     private String phone;
@@ -28,44 +24,38 @@ public class Advisor {
     @Column(nullable = false)
     private String email;
 
-    protected Advisor() {
+    @OneToMany(mappedBy = "advisor", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Client> clients;
 
-    }
+    protected Advisor() {}
 
-    public Advisor(String firstName, String lastName, String address, String phone, String email) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.address = address;
+    public Advisor(String name, String phone, String email) {
+        this.name = name;
         this.phone = phone;
         this.email = email;
+        clients = new ArrayList<>();
     }
 
-    public Long getAdvisorId() {
+    public List<Client> getClients() { return clients; }
+    public void addClient(Client client) {
+        this.clients.add(client);
+        client.setAdvisor(this);
+    }
+    public void removeClient(Client client) {
+        this.clients.remove(client);
+        client.setAdvisor(null);
+    }
+
+    public long getAdvisorId() {
         return advisorId;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getPhone() {
@@ -84,3 +74,5 @@ public class Advisor {
         this.email = email;
     }
 }
+
+
